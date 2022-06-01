@@ -1,0 +1,40 @@
+#!/bin/bash
+# A small Bash script to set up User LED3 to be turned on or off from 
+#  Linux console. Written by Derek Molloy (derekmolloy.ie) for the 
+#  book Exploring BeagleBone.
+
+LED3_PATH=/sys/class/leds/beaglebone:green:usr3
+
+# Example bash function
+function removeTrigger
+{
+  echo "none" >> "$LED3_PATH/trigger"
+}
+
+echo "Iniciando Bash Script para LED 3 de BBB"
+if [ $# -eq 0 ]; then
+  echo "No se detecto ningun argumento, intenta:"
+  echo -e " comando bashLED \n  Donde "
+  echo -e "   on, off, flash o estado  \n Por ejemplo: bashLED on "
+  exit 2
+fi
+echo "El comando seleccionado es: $1"
+if [ "$1" == "on" ]; then
+  echo "Encendiendo el LED"
+  removeTrigger
+  echo "1" >> "$LED3_PATH/brightness"
+elif [ "$1" == "off" ]; then
+  echo "Apagando el LED"
+  removeTrigger
+  echo "0" >> "$LED3_PATH/brightness"
+elif [ "$1" == "flash" ]; then
+  echo "LED intermitente"
+  removeTrigger
+  echo "timer" >> "$LED3_PATH/trigger"
+  sleep 1
+  echo "500" >> "$LED3_PATH/delay_off"
+  echo "500" >> "$LED3_PATH/delay_on"
+elif [ "$1" == "estado" ]; then
+  cat "$LED3_PATH/trigger";
+fi
+echo "Fin del script bashLED"
